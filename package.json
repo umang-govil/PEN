@@ -1,0 +1,28 @@
+{
+  "name": "pen",
+  "version": "1.0.0",
+  "description": "This is Peer Exercise Network App for those who are able to set their goals but not punctual enough to finish their goals till the end.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/umang-govil/PEN.git"
+  },
+  "author": "Umang Govil <umang.govil17996@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/umang-govil/PEN/issues"
+  },
+  "homepage": "https://github.com/umang-govil/PEN#readme",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.1",
+    "jsonwebtoken": "^8.0.1",
+    "mongoose": "^4.12.0",
+    "morgan": "^1.9.0"
+  }
+}
