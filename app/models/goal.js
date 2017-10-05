@@ -11,23 +11,20 @@ var GoalSchema = new Schema({
 		type: String,
 		required: true
 	},
-	milestones: [{
-		title: {
-			type: String,
-			required: true
-		}
-	}],
-	created_at: {
-		type: Date,
-		default: Date.now
+	description: {
+		type: String,
+		required: true
+	},
+	milestones: {
+		type: Number,
+		required: true
 	},
 	deadline: {
-		type: Date,
-		required: true,
-		index: {
-			unique: true
-		}
+		type: String,
+		required: true
 	}
+}, {
+	timestamps: true
 });
 
 module.exports = mongoose.model('Goal', GoalSchema);

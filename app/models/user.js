@@ -19,10 +19,24 @@ var UserSchema = new Schema({
 			unique: true
 		}
 	},
+	location: {
+		type: String,
+		required: true,
+	},
+	age: {
+		type: Number,
+	},
 	password: {
 		type: String,
-		required: true
-	}
+		required: true,
+		select: false
+	},
+	goals: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Goal'
+	}]
+}, {
+	timestamps: true
 });
 
 UserSchema.pre('save', function(next) {

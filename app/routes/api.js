@@ -5,8 +5,10 @@ var config = require('../../config');
 var secretKey = config.secretKey;
 
 var jsonwebtoken = require('jsonwebtoken');
+var nodemailer = require('nodemailer');
 
 function createToken(user) {
+	console.log(user);
 	var token = jsonwebtoken.sign({
 		id: user._id
 	}, secretKey, {
@@ -22,17 +24,23 @@ module.exports = function(app, express) {
 	api.post('/createUser', function(req, res) {
 		var user = new User({
 			name: req.body.name,
+			username: req.body.username,
 			email: req.body.email,
-			password: req.body.password
+			password: req.body.password,
+			location: req.body.location,
+			age: req.body.age
 		});
 		user.save(function(err) {
 			if (err) {
 				res.send(err);
 				return;
+			} else {
+				console.log('sent');
+				res.json({
+					success: true,
+					message: 'User has been created'
+				});
 			}
-			res.json({
-				message: 'User has been created'
-			});
 		});
 	});
 
@@ -49,7 +57,7 @@ module.exports = function(app, express) {
 	api.post('/login', function(req, res) {
 		User.findOne({
 			email: req.body.email
-		}, function(err, user) {
+		}).select('password').exec(function(err, user) {
 			if (err) throw err;
 
 			if (!user) {
@@ -67,14 +75,11 @@ module.exports = function(app, express) {
 					///token
 					var token = createToken(user);
 					// console.log(user);
-					var userDetail = user;
-					userDetail.password = undefined;
-
 					res.json({
 						success: true,
 						message: 'Successfully login !',
 						token: token,
-						data: userDetail
+						userId: user._id
 					});
 				}
 			}
@@ -84,7 +89,9 @@ module.exports = function(app, express) {
 	api.use(function(req, res, next) {
 
 		console.log("in the middleware");
-		var token = req.body.token || req.param('token') || req.headers['x-access-token'];
+		console.log(req.body);
+		console.log(req.headers.authorization);
+		var token = req.body.token || req.headers.authorization;
 
 		//check if token exists
 		if (token) {
@@ -107,14 +114,40 @@ module.exports = function(app, express) {
 		}
 	});
 
+	api.get('/getProfile', function(req, res) {
+		var userId = req.decoded.id;
+		User.findOne({
+			_id: userId
+		}).populate('goals').exec(function(err, user) {
+			if (err) throw err;
+
+			if (!user) {
+				res.send({
+					message: "User doesn't exist"
+				});
+			} else if (user) {
+
+				var goalCount = user.goals.length;
+				console.log("profile sent");
+				res.json({
+					success: true,
+					data: user,
+					goalCount: goalCount
+				});
+			}
+		});
+	});
+
 	api.post('/createGoal', function(req, res) {
 		var goal = new Goal({
 			userId: req.decoded.id,
 			title: req.body.title,
+			description: req.body.description,
 			milestones: req.body.milestones,
 			deadline: req.body.deadline
 		});
-		goal.save(function(err) {
+
+		goal.save(function(err, data) {
 			if (err) {
 				res.send(err);
 				return;
@@ -123,8 +156,56 @@ module.exports = function(app, express) {
 					success: true,
 					message: "Goal created succesfully !"
 				});
+
+				User.findOne({
+					_id: req.decoded.id
+				}, function(err, user) {
+					if (err) throw err;
+
+					if (!user) {
+						console.log("Invalid User");
+					} else {
+
+						user.goals.push(data._id);
+
+						user.save(function(err) {
+							if (err) throw err;
+						});
+
+						var emailId = user.email;
+
+						var smtpTransport = nodemailer.createTransport({
+							service: "gmail",
+							secure: false,
+							port: 25,
+							auth: {
+								user: 'peer.exercise@gmail.com',
+								pass: 'peer123456'
+							},
+							tls: {
+								rejectUnauthorized: false
+							}
+						});
+
+						var mailOptions = {
+							from: '"Peer Network" <peer.exercise@gmail.com',
+							to: emailId,
+							subject: 'Goal Notification',
+							text: 'Hi ' + user.name + ', thank you for setting up a goal on our app. You have to complete it by your specified deadline ie ' + req.body.deadline + '. Your goal title is ' + req.body.title + ' & its description: ' + req.body.description + '.'
+						};
+
+						smtpTransport.sendMail(mailOptions, function(err, res) {
+							if (err) {
+								console.log(err);
+							} else {
+								console.log("Message Sent:" + res.message);
+							}
+						});
+					}
+				});
 			}
 		});
+
 	});
 
 	return api;
