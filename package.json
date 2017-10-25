@@ -4,8 +4,8 @@
   "description": "This is Peer Exercise Network App for those who are able to set their goals but not punctual enough to finish their goals till the end.",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -22,10 +22,10 @@
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.1",
+    "https": "^1.0.0",
     "jsonwebtoken": "^8.0.1",
     "mongoose": "^4.12.0",
     "morgan": "^1.9.0",
-    "nodemailer": "^4.1.2",
     "path": "^0.12.7"
   }
 }

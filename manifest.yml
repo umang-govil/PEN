@@ -1,0 +1,8 @@
+applications:
+- name: peer-exercise-network
+  random-route: true
+  memory: 128M
+  disk_quota: 512M
+  buildpack: nodejs_buildpack
+  domain: au-syd.mybluemix.net
+  command: node server.js

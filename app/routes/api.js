@@ -5,12 +5,14 @@ var config = require('../../config');
 var secretKey = config.secretKey;
 
 var jsonwebtoken = require('jsonwebtoken');
-var nodemailer = require('nodemailer');
+var https = require('https');
 
 function createToken(user) {
 	console.log(user);
 	var token = jsonwebtoken.sign({
 		id: user._id
+			/*,
+					email: user.email*/
 	}, secretKey, {
 		expiresIn: 1440
 	});
@@ -35,7 +37,43 @@ module.exports = function(app, express) {
 				res.send(err);
 				return;
 			} else {
-				console.log('sent');
+
+				var tokenConfirm = createToken(user);
+				console.log(tokenConfirm);
+
+				var confirmMailObject = JSON.stringify({
+					email: req.body.email,
+					name: req.body.name,
+					subject: 'Confirm Email',
+					content: 'Please confirm your email by clicking on this link http://localhost:8080/api/confirmation/' + tokenConfirm
+				});
+
+				var confirmPostHeaders = {
+					'Content-Type': 'application/json',
+					'Content-Length': Buffer.byteLength(confirmMailObject, 'utf8')
+				};
+
+				var confirmOptionsPost = {
+					host: 'send-mailer.herokuapp.com',
+					path: '/api/sendMail',
+					method: 'POST',
+					headers: confirmPostHeaders
+				};
+
+				var confirmSend = https.request(confirmOptionsPost, function(res) {
+					res.on('data', function(d) {
+						console.info('POST result:\n');
+						process.stdout.write(d);
+						console.info('\n\nPOST completed');
+					});
+				});
+
+				confirmSend.write(confirmMailObject);
+				confirmSend.end();
+				confirmSend.on('error', function(e) {
+					console.error(e);
+				});
+
 				res.json({
 					success: true,
 					message: 'User has been created'
@@ -44,20 +82,42 @@ module.exports = function(app, express) {
 		});
 	});
 
-	/*api.get('/getUsers', function(req, res) {
-		User.find({}, function(err, users) {
+	api.get('/confirmation/:token', function(req, res) {
+		var confirmToken = req.params.token;
+		jsonwebtoken.verify(confirmToken, secretKey, function(err, decoded) {
 			if (err) {
-				res.send(err);
-				return;
+				res.status(403).send({
+					success: false,
+					message: 'Failed to authenticate User'
+				});
+			} else {
+				req.decoded = decoded;
+				User.findOne({
+					'_id': req.decoded.id
+				}, function(err, user) {
+					if (err) throw err;
+
+					if (!user) {
+						res.send({
+							message: "User doesn't exist"
+						});
+					} else if (user) {
+						user.confirmed = true;
+						console.log(user);
+						user.save(function(err) {
+							if (err) throw err;
+						});
+					}
+				});
 			}
-			res.json(users);
 		});
-	});*/
+		return res.redirect('http://localhost:8080');
+	});
 
 	api.post('/login', function(req, res) {
 		User.findOne({
 			email: req.body.email
-		}).select('password').exec(function(err, user) {
+		}).select('_id name email confirmed +password').exec(function(err, user) {
 			if (err) throw err;
 
 			if (!user) {
@@ -72,15 +132,21 @@ module.exports = function(app, express) {
 						message: 'Invalid Password'
 					});
 				} else {
-					///token
-					var token = createToken(user);
-					// console.log(user);
-					res.json({
-						success: true,
-						message: 'Successfully login !',
-						token: token,
-						userId: user._id
-					});
+					if (user.confirmed) {
+						///token
+						var token = createToken(user);
+						// console.log(user);
+						res.json({
+							success: true,
+							message: 'Successfully login !',
+							token: token,
+							userId: user._id
+						});
+					} else if (!user.confirmed) {
+						res.send({
+							message: 'Confirm email to login'
+						});
+					}
 				}
 			}
 		});
@@ -172,34 +238,41 @@ module.exports = function(app, express) {
 							if (err) throw err;
 						});
 
-						var emailId = user.email;
-
-						var smtpTransport = nodemailer.createTransport({
-							service: "gmail",
-							secure: false,
-							port: 25,
-							auth: {
-								user: 'peer.exercise@gmail.com',
-								pass: 'peer123456'
-							},
-							tls: {
-								rejectUnauthorized: false
-							}
+						var mailObject = JSON.stringify({
+							email: user.email,
+							name: user.name,
+							title: req.body.title,
+							description: req.body.description,
+							deadline: req.body.deadline,
+							subject: 'Goal Notification',
+							content: 'Hi ' + user.name + ', thank you for setting up a goal on our app. You have to complete it by your specified deadline ie ' + req.body.deadline + '. Your goal title is ' + req.body.title + ' & its description: ' + req.body.description + '.'
 						});
 
-						var mailOptions = {
-							from: '"Peer Network" <peer.exercise@gmail.com',
-							to: emailId,
-							subject: 'Goal Notification',
-							text: 'Hi ' + user.name + ', thank you for setting up a goal on our app. You have to complete it by your specified deadline ie ' + req.body.deadline + '. Your goal title is ' + req.body.title + ' & its description: ' + req.body.description + '.'
+						var postheaders = {
+							'Content-Type': 'application/json',
+							'Content-Length': Buffer.byteLength(mailObject, 'utf8')
 						};
 
-						smtpTransport.sendMail(mailOptions, function(err, res) {
-							if (err) {
-								console.log(err);
-							} else {
-								console.log("Message Sent:" + res.message);
-							}
+						var optionspost = {
+							host: 'send-mailer.herokuapp.com',
+							path: '/api/sendMail',
+							method: 'POST',
+							headers: postheaders
+						};
+
+						var send = https.request(optionspost, function(res) {
+
+							res.on('data', function(d) {
+								console.info('POST result:\n');
+								process.stdout.write(d);
+								console.info('\n\nPOST completed');
+							});
+						});
+
+						send.write(mailObject);
+						send.end();
+						send.on('error', function(e) {
+							console.error(e);
 						});
 					}
 				});

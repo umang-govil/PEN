@@ -24,9 +24,9 @@ mongoose.connect(config.database, options, function(err) {
 	}
 });
 
-app.use(cors({
+/*app.use(cors({
 	origin: 'http://localhost:4200'
-}));
+}));*/
 
 app.use(bodyParser.urlencoded({
 	extended: false

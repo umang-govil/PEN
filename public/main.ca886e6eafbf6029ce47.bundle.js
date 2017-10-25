@@ -1169,7 +1169,7 @@ webpackJsonp([1], {
 			U = t("5v8a"),
 			q = (t.n(U), function() {
 				function n(n) {
-					this.http = n, this.domain = "http://localhost:3000/api"
+					this.http = n, this.domain = "http://localhost:8080/api"
 				}
 				return n.prototype.createAuthenticationHeaders = function() {
 					this.loadToken(), this.options = new D.g({

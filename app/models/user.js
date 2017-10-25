@@ -31,6 +31,10 @@ var UserSchema = new Schema({
 		required: true,
 		select: false
 	},
+	confirmed: {
+		type: Boolean,
+		default: false
+	},
 	goals: [{
 		type: Schema.Types.ObjectId,
 		ref: 'Goal'
