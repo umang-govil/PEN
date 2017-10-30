@@ -27,7 +27,7 @@ mongoose.connect(config.database, options, function(err) {
 /*app.use(cors({
 	origin: 'http://localhost:4200'
 }));*/
-
+module.exports = app;
 app.use(bodyParser.urlencoded({
 	extended: false
 }));
@@ -37,7 +37,7 @@ app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-var api = require('./app/routes/api')(app, express);
+var api = require('./app/routes/api');
 app.use('/api', api);
 
 app.get('/*', function(req, res) {
@@ -61,6 +61,6 @@ app.listen(config.port, function(err) {
 	if (err) {
 		console.log(err);
 	} else {
-		console.log("Listening on port 3000");
+		console.log("Listening on port" + config.port);
 	}
 });
