@@ -26,7 +26,7 @@ api.createTrainer = function(req, res) {
 };
 
 api.getTrainers = function(req, res) {
-	Traine.find({}, function(err, trainers) {
+	Trainer.find({}, function(err, trainers) {
 		if (err) {
 			res.send(err);
 			return;
@@ -34,3 +34,5 @@ api.getTrainers = function(req, res) {
 		res.json(trainers);
 	});
 };
+
+module.exports = api;
