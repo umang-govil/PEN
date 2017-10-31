@@ -140,7 +140,7 @@ api.login = function(req, res) {
 						res.json({
 							success: true,
 							status: 1,
-							message: 'Successfully logged in, Now Complete your details!',
+							message: 'Login Successful, complete your details!',
 							token: token,
 							userId: user._id
 						});
@@ -148,7 +148,7 @@ api.login = function(req, res) {
 						res.json({
 							success: true,
 							status: 2,
-							message: 'Successfully logged in, Welcome to your Dashboard !',
+							message: 'Login Successful!',
 							token: token,
 							userId: user._id
 						});
@@ -156,14 +156,14 @@ api.login = function(req, res) {
 						res.json({
 							success: true,
 							status: 3,
-							message: 'Successfully logged in, Welcome Admin',
+							message: 'Login Successful, welcome Admin',
 							token: token,
 							userId: user._id
 						});
 					}
 				} else if (!user.confirmed) {
 					res.send({
-						message: 'Confirm email to login'
+						message: 'Confirm your e-mail to login'
 					});
 				}
 			}
