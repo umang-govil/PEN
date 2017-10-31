@@ -1,5 +1,5 @@
-var User = require('../models/user');
-var Goal = require('../models/goal');
+var User = require('../models/userSchema');
+var Goal = require('../models/goalSchema');
 
 var express = require('express');
 
@@ -30,9 +30,7 @@ api.createUser = function(req, res) {
 		name: req.body.name,
 		username: req.body.username,
 		email: req.body.email,
-		password: req.body.password,
-		location: req.body.location,
-		age: req.body.age
+		password: req.body.password
 	});
 	user.save(function(err) {
 		if (err) {
@@ -75,7 +73,6 @@ api.createUser = function(req, res) {
 			confirmSend.on('error', function(e) {
 				console.error(e);
 			});
-
 			res.json({
 				success: true,
 				message: 'User has been created'
@@ -118,7 +115,8 @@ api.confirm = function(req, res) {
 
 api.login = function(req, res) {
 	User.findOne({
-		email: req.body.email
+		email: req.body.email,
+		role: req.body.role
 	}).select('_id name email confirmed +password').exec(function(err, user) {
 		if (err) throw err;
 
@@ -138,18 +136,55 @@ api.login = function(req, res) {
 					///token
 					var token = createToken(user);
 					// console.log(user);
-					res.json({
-						success: true,
-						message: 'Successfully login !',
-						token: token,
-						userId: user._id
-					});
+					if (user.location === null) {
+						res.json({
+							success: true,
+							status: 2,
+							message: 'Successfully login !',
+							token: token,
+							userId: user._id
+						});
+					} else if (user.location !== null) {
+						res.json({
+							success: true,
+							status: 3,
+							message: 'Successfully login !',
+							token: token,
+							userId: user._id
+						});
+					}
 				} else if (!user.confirmed) {
 					res.send({
 						message: 'Confirm email to login'
 					});
 				}
 			}
+		}
+	});
+};
+
+api.completeUser = function(req, res) {
+	User.findOne({
+		_id: req.decoded.id
+	}, function(err, user) {
+
+		if (err) throw err;
+
+		if (!user) {
+			console.log("Invalid User");
+		} else if (user) {
+			user.location = req.body.location;
+			user.age = req.body.age;
+			user.gender = req.body.gender;
+
+			user.save(function(err) {
+				if (err) throw err;
+			});
+
+			res.json({
+				success: true,
+				message: 'User Details have been completed'
+			});
 		}
 	});
 };
