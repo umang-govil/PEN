@@ -136,19 +136,27 @@ api.login = function(req, res) {
 					///token
 					var token = createToken(user);
 					// console.log(user);
-					if (user.location === null) {
+					if (user.location === null && user.role == 1) {
 						res.json({
 							success: true,
-							status: 2,
-							message: 'Successfully login !',
+							status: 1,
+							message: 'Successfully logged in, Now Complete your details!',
 							token: token,
 							userId: user._id
 						});
-					} else if (user.location !== null) {
+					} else if (user.location !== null && user.role == 1) {
+						res.json({
+							success: true,
+							status: 2,
+							message: 'Successfully logged in, Welcome to your Dashboard !',
+							token: token,
+							userId: user._id
+						});
+					} else if (user.role === 0) {
 						res.json({
 							success: true,
 							status: 3,
-							message: 'Successfully login !',
+							message: 'Successfully logged in, Welcome Admin',
 							token: token,
 							userId: user._id
 						});
