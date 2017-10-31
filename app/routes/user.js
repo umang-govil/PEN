@@ -1,5 +1,5 @@
-var User = require('../models/user');
-var Goal = require('../models/goal');
+var User = require('../models/userSchema');
+var Goal = require('../models/goalSchema');
 
 var express = require('express');
 

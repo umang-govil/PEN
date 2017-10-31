@@ -8,23 +8,18 @@ var UserSchema = new Schema({
 	username: {
 		type: String,
 		required: true,
-		index: {
-			unique: true
-		}
 	},
 	email: {
 		type: String,
 		required: true,
-		index: {
-			unique: true
-		}
 	},
 	location: {
 		type: String,
-		required: true,
+		default: null
 	},
 	age: {
 		type: Number,
+		default: 0
 	},
 	password: {
 		type: String,
@@ -34,6 +29,14 @@ var UserSchema = new Schema({
 	confirmed: {
 		type: Boolean,
 		default: false
+	},
+	gender: {
+		type: String,
+		default: null
+	},
+	role: {
+		type: Number,
+		default: 1
 	},
 	goals: [{
 		type: Schema.Types.ObjectId,

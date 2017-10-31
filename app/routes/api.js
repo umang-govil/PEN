@@ -2,6 +2,7 @@ var express = require('express');
 
 var user = require('./user');
 var auth = require('./auth');
+var trainer = require('./trainer');
 
 var config = require('../../config');
 var secretKey = config.secretKey;
@@ -16,6 +17,8 @@ api.post('/createUser', auth.createUser);
 api.get('/confirmation/:token', auth.confirm);
 
 api.post('/login', auth.login);
+
+api.post('/createTrainer', trainer.createTrainer);
 
 api.use(function(req, res, next) {
 
@@ -45,8 +48,12 @@ api.use(function(req, res, next) {
 	}
 });
 
+api.post('/completeUser', auth.completeUser);
+
 api.get('/getProfile', user.getProfile);
 
 api.post('/createGoal', user.createGoal);
+
+api.get('/getTrainers', trainer.getTrainers);
 
 module.exports = api;
