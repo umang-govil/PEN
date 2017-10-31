@@ -19,7 +19,7 @@ api.createTrainer = function(req, res) {
 		else {
 			res.json({
 				success: true,
-				message: 'Trainer Created'
+				message: 'Application Submitted'
 			});
 		}
 	});
