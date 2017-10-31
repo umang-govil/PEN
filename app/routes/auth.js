@@ -102,7 +102,7 @@ api.confirm = function(req, res) {
 					});
 				} else if (user) {
 					user.confirmed = true;
-					console.log(user);
+					// console.log(user);
 					user.save(function(err) {
 						if (err) throw err;
 					});
@@ -117,7 +117,7 @@ api.login = function(req, res) {
 	User.findOne({
 		email: req.body.email,
 		role: req.body.role
-	}).select('_id name email confirmed +password').exec(function(err, user) {
+	}).select('_id name email confirmed location age gender role +password').exec(function(err, user) {
 		if (err) throw err;
 
 		if (!user) {
