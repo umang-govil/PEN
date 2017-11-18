@@ -66,6 +66,8 @@ api.createGoal = function(req, res) {
 						if (err) throw err;
 					});
 
+					//////sendMail api on Heroku///////
+
 					var mailObject = JSON.stringify({
 						email: user.email,
 						name: user.name,
@@ -100,6 +102,45 @@ api.createGoal = function(req, res) {
 					send.write(mailObject);
 					send.end();
 					send.on('error', function(e) {
+						console.error(e);
+					});
+
+					//////ScheduleMail Api on Heroku///////
+
+					var scheduleMailObject = JSON.stringify({
+						email: user.email,
+						name: user.name,
+						deadline: req.body.deadline,
+						title: req.body.title,
+						milestones: req.body.milestones,
+						subject: 'Goal Reminder',
+						content: "Hi " + user.name + ", the deadline for your goal is approaching. Are you slacking off because your peers aren't !!"
+					});
+
+					var scheduleMailPostHeaders = {
+						'Content-Type': 'application/json',
+						'Content-Length': Buffer.byteLength(scheduleMailObject, 'utf8')
+					};
+
+					var scheduleMailOptionsPost = {
+						host: 'send-mailer.herokuapp.com',
+						path: '/api/scheduleMail',
+						method: 'POST',
+						headers: scheduleMailPostHeaders
+					};
+
+					var schedule = https.request(scheduleMailOptionsPost, function(res) {
+
+						res.on('data', function(d) {
+							console.info('POST result:\n');
+							process.stdout.write(d);
+							console.info('\n\nPOST completed');
+						});
+					});
+
+					schedule.write(scheduleMailObject);
+					schedule.end();
+					schedule.on('error', function(e) {
 						console.error(e);
 					});
 				}
