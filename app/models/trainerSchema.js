@@ -3,11 +3,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var TrainerSchema = new Schema({
-	userId: {
+	userId: [{
 		type: Schema.Types.ObjectId,
 		ref: 'User',
 		default: null
-	},
+	}],
 	name: {
 		type: String
 	},

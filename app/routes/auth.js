@@ -110,7 +110,7 @@ api.confirm = function(req, res) {
 			});
 		}
 	});
-	return res.redirect('https://peer-exercise-network.au-syd.mybluemix.net');
+	return res.redirect('http://localhost:8080');
 };
 
 api.login = function(req, res) {
@@ -197,4 +197,6 @@ api.completeUser = function(req, res) {
 	});
 };
 
-module.exports = api;
+api.viewGoals =
+
+	module.exports = api;

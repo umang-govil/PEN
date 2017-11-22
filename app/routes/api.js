@@ -56,4 +56,10 @@ api.post('/createGoal', user.createGoal);
 
 api.get('/getTrainers', trainer.getTrainers);
 
+api.post('/searchUsers', user.searchUsers);
+
+api.post('/getParticularProfile', user.getParticularProfile);
+
+api.post('/followUser', user.followUser);
+
 module.exports = api;

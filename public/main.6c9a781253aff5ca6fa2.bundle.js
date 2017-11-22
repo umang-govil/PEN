@@ -2109,7 +2109,7 @@ webpackJsonp([1], {
 			V = (e("5v8a"), e("W4CS")),
 			F = function() {
 				function n(n) {
-					this.http = n, this.domain = "https://peer-exercise-network.au-syd.mybluemix.net/api"
+					this.http = n, this.domain = "http://localhost:8080/api/"
 				}
 				return n.prototype.createAuthenticationHeaders = function() {
 					this.loadToken(), this.options = new U.RequestOptions({

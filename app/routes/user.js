@@ -13,12 +13,14 @@ api.getProfile = function(req, res) {
 	User.findOne({
 		_id: userId
 	}).populate('goals').exec(function(err, user) {
-		if (err) throw err;
-
-		if (!user) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!user) {
 			res.send({
 				message: "User doesn't exist"
 			});
+			return;
 		} else if (user) {
 
 			var goalCount = user.goals.length;
@@ -36,8 +38,9 @@ api.createGoal = function(req, res) {
 	var goal = new Goal({
 		userId: req.decoded.id,
 		title: req.body.title,
+		goalType: req.body.goalType,
 		description: req.body.description,
-		milestones: req.body.milestones,
+		milestoneCount: req.body.milestones,
 		deadline: req.body.deadline
 	});
 
@@ -149,6 +152,88 @@ api.createGoal = function(req, res) {
 	});
 };
 
+api.searchUsers = function(req, res) {
+
+	User.find({
+		location: req.body.location
+	}).populate({
+		path: 'goals',
+		match: {
+			goalType: req.body.goalType
+		}
+	}).exec(function(err, users) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!users) {
+			res.send({
+				message: 'Some error'
+			});
+			return;
+		} else if (users) {
+			res.json(users);
+		}
+	});
+
+};
+
+api.getParticularProfile = function(req, res) {
+	User.findOne({
+		_id: req.body.userId
+	}).populate('goals').exec(function(err, user) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!user) {
+			res.send({
+				message: "User doesn't exist"
+			});
+			return;
+		} else if (user) {
+			res.json(user);
+		}
+	});
+};
+
+api.followUser = function(req, res) {
+	User.findOne({
+		_id: req.body.userId
+	}, function(err, user) {
+		if (err) {
+			res.send(err);
+			return;
+		} else {
+			user.Followers.push(req.decoded.id);
+
+			user.save(function(err) {
+				if (err) {
+					res.send(err);
+					return;
+				} else {
+					User.findOne({
+						_id: req.decoded.id
+					}, function(err, user) {
+						if (err) {
+							res.send(err);
+							return;
+						} else if (!user) {
+							res.send({
+								message: "User doesn't exist"
+							});
+							return;
+						} else if (user) {
+							user.Following.push(req.body.userId);
+							res.json({
+								success: true,
+								message: 'User Followed'
+							});
+						}
+					});
+				}
+			});
+		}
+	});
+};
 
 
 module.exports = api;
