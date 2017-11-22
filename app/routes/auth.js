@@ -197,6 +197,4 @@ api.completeUser = function(req, res) {
 	});
 };
 
-api.viewGoals =
-
-	module.exports = api;
+module.exports = api;
