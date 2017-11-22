@@ -19,11 +19,13 @@ var UserSchema = new Schema({
 	},
 	Followers: [{
 		type: Schema.Types.ObjectId,
-		ref: 'User'
+		ref: 'User',
+		default: null
 	}],
 	Following: [{
 		type: Schema.Types.ObjectId,
-		ref: 'User'
+		ref: 'User',
+		default: null
 	}],
 	age: {
 		type: Number,
