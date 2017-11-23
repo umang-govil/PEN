@@ -36,13 +36,13 @@ api.getTrainers = function(req, res) {
 };
 
 api.approveTrainers = function(req, res) {
-	var trainers = req.body;
+	var response = req.body;
 	var trainersList = [];
-	var trainerCount = trainers.length;
+	var trainerCount = response.length;
 
 	for (var i = 0; i < trainerCount; i++) {
-		if (trainers[i].approved) {
-			trainersList.push(trainers[i]._id);
+		if (response[i].approved) {
+			trainersList.push(response[i]._id);
 		}
 	}
 
@@ -60,8 +60,9 @@ api.approveTrainers = function(req, res) {
 			});
 			return;
 		} else if (trainers) {
-			trainers.goalStatus = true;
-
+			for (var i = 0; i < trainers.length; i++) {
+				trainers[i].approved = true;
+			}
 			trainers.forEach(function(trainer) {
 				trainer.save(function(err) {
 					if (err) {
