@@ -78,7 +78,7 @@ api.createGoal = function(req, res) {
 						description: req.body.description,
 						deadline: req.body.deadline,
 						subject: 'Goal Notification',
-						content: 'Hi ' + user.name + ', thank you for setting up a goal on our app. You have to complete it by your specified deadline ie ' + req.body.deadline + '. Your goal title is ' + req.body.title + ' & its description: ' + req.body.description + '.'
+						content: 'Hi ' + user.name + ', thank you for setting up a goal on our app. You have to complete it by your specified deadline ie. ' + req.body.deadline + '. Your goal title is ' + req.body.title + 'and its type is' + req.body.goalType + ' & its description is ' + req.body.description + '.'
 					});
 
 					var postheaders = {
@@ -167,7 +167,7 @@ api.searchUsers = function(req, res) {
 			return;
 		} else if (!users) {
 			res.send({
-				message: 'Some error'
+				message: 'Users Not Found'
 			});
 			return;
 		} else if (users) {
