@@ -62,4 +62,8 @@ api.post('/getParticularProfile', user.getParticularProfile);
 
 api.post('/followUser', user.followUser);
 
+api.post('/completeGoal', user.completeGoal);
+
+api.post('/approveTrainers', trainer.approveTrainers);
+
 module.exports = api;

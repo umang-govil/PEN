@@ -9,7 +9,7 @@ api.createTrainer = function(req, res) {
 	var trainer = new Trainer({
 		name: req.body.name,
 		age: req.body.age,
-		address: req.body.address,
+		email: req.body.email,
 		experience: req.body.experience,
 		gender: req.body.gender
 	});
@@ -32,6 +32,49 @@ api.getTrainers = function(req, res) {
 			return;
 		}
 		res.json(trainers);
+	});
+};
+
+api.approveTrainers = function(req, res) {
+	var trainers = req.body;
+	var trainersList = [];
+	var trainerCount = trainers.length;
+
+	for (var i = 0; i < trainerCount; i++) {
+		if (trainers[i].approved) {
+			trainersList.push(trainers[i]._id);
+		}
+	}
+
+	Trainer.find({
+		_id: {
+			$in: trainersList
+		}
+	}, function(err, trainers) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!trainers) {
+			res.send({
+				message: "Trainer doesn't exist"
+			});
+			return;
+		} else if (trainers) {
+			trainers.goalStatus = true;
+
+			trainers.forEach(function(trainer) {
+				trainer.save(function(err) {
+					if (err) {
+						res.send(err);
+						return;
+					}
+				});
+			});
+			res.json({
+				success: true,
+				message: 'Trainer Approved'
+			});
+		}
 	});
 };
 

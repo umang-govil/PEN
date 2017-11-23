@@ -154,8 +154,11 @@ api.createGoal = function(req, res) {
 
 api.searchUsers = function(req, res) {
 
+	var searchLoc = req.body.location;
+	var lowCaseLoc = searchLoc.toLowerCase();
+
 	User.find({
-		location: req.body.location
+		location: lowCaseLoc
 	}).populate({
 		path: 'goals',
 		match: {
@@ -202,7 +205,12 @@ api.followUser = function(req, res) {
 		if (err) {
 			res.send(err);
 			return;
-		} else {
+		} else if (!user) {
+			res.send({
+				message: "User doesn't exist"
+			});
+			return;
+		} else if (user) {
 			user.Followers.push(req.decoded.id);
 
 			user.save(function(err) {
@@ -235,5 +243,39 @@ api.followUser = function(req, res) {
 	});
 };
 
+api.completeGoal = function(req, res) {
+
+	Goal.find({
+		_id: {
+			$in: req.body.goalsStatus
+		}
+	}, function(err, goals) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!goals) {
+			res.send({
+				message: "Goal doesn't exist"
+			});
+			return;
+		} else if (goals) {
+			for (var i = 0; i < goals.length; i++) {
+				goals[i].goalStatus = true;
+			}
+			goals.forEach(function(goal) {
+				goal.save(function(err) {
+					if (err) {
+						res.send(err);
+						return;
+					}
+				});
+			});
+			res.json({
+				success: true,
+				message: 'Goal status changed to completed'
+			});
+		}
+	});
+};
 
 module.exports = api;
