@@ -9,19 +9,28 @@ var TrainerSchema = new Schema({
 		default: null
 	}],
 	name: {
-		type: String
+		type: String,
+		required: true
 	},
 	age: {
-		type: Number
+		type: Number,
+		required: true
 	},
-	address: {
-		type: String
+	email: {
+		type: String,
+		required: true
+	},
+	approved: {
+		type: Boolean,
+		default: false
 	},
 	experience: {
-		type: String
+		type: String,
+		required: true
 	},
 	gender: {
-		type: String
+		type: String,
+		required: true
 	}
 }, {
 	timestamps: true

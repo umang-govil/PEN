@@ -259,18 +259,20 @@ api.completeGoal = function(req, res) {
 			});
 			return;
 		} else if (goals) {
-			goals.goalStatus = true;
-
-			goals.save(function(err) {
-				if (err) {
-					res.send(err);
-					return;
-				} else {
-					res.json({
-						success: true,
-						message: 'Goal status changed to completed'
-					});
-				}
+			for (var i = 0; i < goals.length; i++) {
+				goals[i].goalStatus = true;
+			}
+			goals.forEach(function(goal) {
+				goal.save(function(err) {
+					if (err) {
+						res.send(err);
+						return;
+					}
+				});
+			});
+			res.json({
+				success: true,
+				message: 'Goal status changed to completed'
 			});
 		}
 	});
