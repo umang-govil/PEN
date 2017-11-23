@@ -7,6 +7,10 @@ var GoalSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	},
+	goalType: {
+		type: String,
+		required: true
+	},
 	title: {
 		type: String,
 		required: true
@@ -15,10 +19,20 @@ var GoalSchema = new Schema({
 		type: String,
 		required: true
 	},
-	milestones: {
+	milestoneCount: {
 		type: Number,
 		required: true
 	},
+	milestones: [{
+		mileTitle: {
+			type: String,
+			required: true
+		},
+		mileStatus: {
+			type: Boolean,
+			default: false
+		}
+	}],
 	deadline: {
 		type: String,
 		required: true

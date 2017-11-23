@@ -13,12 +13,14 @@ api.getProfile = function(req, res) {
 	User.findOne({
 		_id: userId
 	}).populate('goals').exec(function(err, user) {
-		if (err) throw err;
-
-		if (!user) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!user) {
 			res.send({
 				message: "User doesn't exist"
 			});
+			return;
 		} else if (user) {
 
 			var goalCount = user.goals.length;
@@ -36,8 +38,9 @@ api.createGoal = function(req, res) {
 	var goal = new Goal({
 		userId: req.decoded.id,
 		title: req.body.title,
+		goalType: req.body.goalType,
 		description: req.body.description,
-		milestones: req.body.milestones,
+		milestoneCount: req.body.milestones,
 		deadline: req.body.deadline
 	});
 
@@ -66,6 +69,8 @@ api.createGoal = function(req, res) {
 						if (err) throw err;
 					});
 
+					//////sendMail api on Heroku///////
+
 					var mailObject = JSON.stringify({
 						email: user.email,
 						name: user.name,
@@ -73,7 +78,7 @@ api.createGoal = function(req, res) {
 						description: req.body.description,
 						deadline: req.body.deadline,
 						subject: 'Goal Notification',
-						content: 'Hi ' + user.name + ', thank you for setting up a goal on our app. You have to complete it by your specified deadline ie ' + req.body.deadline + '. Your goal title is ' + req.body.title + ' & its description: ' + req.body.description + '.'
+						content: 'Hi ' + user.name + ', thank you for setting up a goal on our app. You have to complete it by your specified deadline ie. ' + req.body.deadline + '. Your goal title is ' + req.body.title + 'and its type is' + req.body.goalType + ' & its description is ' + req.body.description + '.'
 					});
 
 					var postheaders = {
@@ -102,12 +107,133 @@ api.createGoal = function(req, res) {
 					send.on('error', function(e) {
 						console.error(e);
 					});
+
+					//////ScheduleMail Api on Heroku///////
+
+					var scheduleMailObject = JSON.stringify({
+						email: user.email,
+						name: user.name,
+						deadline: req.body.deadline,
+						title: req.body.title,
+						milestones: req.body.milestones,
+						subject: 'Goal Reminder',
+						content: "Hi " + user.name + ", the deadline for your goal is approaching. Are you slacking off because your peers aren't !!"
+					});
+
+					var scheduleMailPostHeaders = {
+						'Content-Type': 'application/json',
+						'Content-Length': Buffer.byteLength(scheduleMailObject, 'utf8')
+					};
+
+					var scheduleMailOptionsPost = {
+						host: 'send-mailer.herokuapp.com',
+						path: '/api/scheduleMail',
+						method: 'POST',
+						headers: scheduleMailPostHeaders
+					};
+
+					var schedule = https.request(scheduleMailOptionsPost, function(res) {
+
+						res.on('data', function(d) {
+							console.info('POST result:\n');
+							process.stdout.write(d);
+							console.info('\n\nPOST completed');
+						});
+					});
+
+					schedule.write(scheduleMailObject);
+					schedule.end();
+					schedule.on('error', function(e) {
+						console.error(e);
+					});
 				}
 			});
 		}
 	});
 };
 
+api.searchUsers = function(req, res) {
+
+	User.find({
+		location: req.body.location
+	}).populate({
+		path: 'goals',
+		match: {
+			goalType: req.body.goalType
+		}
+	}).exec(function(err, users) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!users) {
+			res.send({
+				message: 'Users Not Found'
+			});
+			return;
+		} else if (users) {
+			res.json(users);
+		}
+	});
+
+};
+
+api.getParticularProfile = function(req, res) {
+	User.findOne({
+		_id: req.body.userId
+	}).populate('goals').exec(function(err, user) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!user) {
+			res.send({
+				message: "User doesn't exist"
+			});
+			return;
+		} else if (user) {
+			res.json(user);
+		}
+	});
+};
+
+api.followUser = function(req, res) {
+	User.findOne({
+		_id: req.body.userId
+	}, function(err, user) {
+		if (err) {
+			res.send(err);
+			return;
+		} else {
+			user.Followers.push(req.decoded.id);
+
+			user.save(function(err) {
+				if (err) {
+					res.send(err);
+					return;
+				} else {
+					User.findOne({
+						_id: req.decoded.id
+					}, function(err, user) {
+						if (err) {
+							res.send(err);
+							return;
+						} else if (!user) {
+							res.send({
+								message: "User doesn't exist"
+							});
+							return;
+						} else if (user) {
+							user.Following.push(req.body.userId);
+							res.json({
+								success: true,
+								message: 'User Followed'
+							});
+						}
+					});
+				}
+			});
+		}
+	});
+};
 
 
 module.exports = api;

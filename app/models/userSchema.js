@@ -7,16 +7,26 @@ var UserSchema = new Schema({
 	name: String,
 	username: {
 		type: String,
-		required: true,
+		required: true
 	},
 	email: {
 		type: String,
-		required: true,
+		required: true
 	},
 	location: {
 		type: String,
 		default: null
 	},
+	Followers: [{
+		type: Schema.Types.ObjectId,
+		ref: 'User',
+		default: null
+	}],
+	Following: [{
+		type: Schema.Types.ObjectId,
+		ref: 'User',
+		default: null
+	}],
 	age: {
 		type: Number,
 		default: 0

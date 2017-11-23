@@ -23,8 +23,8 @@ api.post('/createTrainer', trainer.createTrainer);
 api.use(function(req, res, next) {
 
 	console.log("in the middleware");
-	console.log(req.body);
-	console.log(req.headers.authorization);
+	/*console.log(req.body);
+	console.log(req.headers.authorization);*/
 	var token = req.body.token || req.headers.authorization;
 
 	//check if token exists
@@ -55,5 +55,11 @@ api.get('/getProfile', user.getProfile);
 api.post('/createGoal', user.createGoal);
 
 api.get('/getTrainers', trainer.getTrainers);
+
+api.post('/searchUsers', user.searchUsers);
+
+api.post('/getParticularProfile', user.getParticularProfile);
+
+api.post('/followUser', user.followUser);
 
 module.exports = api;
