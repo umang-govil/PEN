@@ -172,6 +172,10 @@ api.login = function(req, res) {
 };
 
 api.completeUser = function(req, res) {
+
+	var inputLocation = req.body.location;
+	var lowerCaseLoc = inputLocation.toLowerCase();
+
 	User.findOne({
 		_id: req.decoded.id
 	}, function(err, user) {
@@ -181,7 +185,7 @@ api.completeUser = function(req, res) {
 		if (!user) {
 			console.log("Invalid User");
 		} else if (user) {
-			user.location = req.body.location;
+			user.location = lowerCaseLoc;
 			user.age = req.body.age;
 			user.gender = req.body.gender;
 

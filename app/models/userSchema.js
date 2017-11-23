@@ -11,7 +11,10 @@ var UserSchema = new Schema({
 	},
 	email: {
 		type: String,
-		required: true
+		required: true,
+		index: {
+			unique: true
+		}
 	},
 	location: {
 		type: String,
