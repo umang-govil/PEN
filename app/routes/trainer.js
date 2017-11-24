@@ -37,6 +37,7 @@ api.getTrainers = function(req, res) {
 
 api.approveTrainers = function(req, res) {
 	var response = req.body;
+	console.log(response);
 	var trainersList = [];
 	var trainerCount = response.length;
 
@@ -45,7 +46,6 @@ api.approveTrainers = function(req, res) {
 			trainersList.push(response[i]._id);
 		}
 	}
-
 	Trainer.find({
 		_id: {
 			$in: trainersList
