@@ -60,8 +60,6 @@ api.approveTrainers = function(req, res) {
 			});
 			return;
 		} else if (trainers) {
-			trainers.goalStatus = true;
-
 			trainers.forEach(function(trainer) {
 				trainer.save(function(err) {
 					if (err) {
