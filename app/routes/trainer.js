@@ -60,12 +60,9 @@ api.approveTrainers = function(req, res) {
 			});
 			return;
 		} else if (trainers) {
-<<<<<<< HEAD
-=======
 			for (var i = 0; i < trainers.length; i++) {
 				trainers[i].approved = true;
 			}
->>>>>>> refs/remotes/origin/master
 			trainers.forEach(function(trainer) {
 				trainer.save(function(err) {
 					if (err) {
