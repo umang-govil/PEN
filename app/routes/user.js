@@ -279,7 +279,23 @@ api.completeGoal = function(req, res) {
 };
 
 api.dummyCompeleteGoal = function(req, res) {
-	Goal.find({}, function(err, goals) {
+
+	User.find({
+		_id: req.body.userId
+	}).populate('goals').exec(function(err, users) {
+		var goalCount = users.goals.length;
+		var goalResponse = users.goals;
+		var goalsList = [];
+		for (var i = 0; i < goalCount; i++) {
+			goalsList.push(goalResponse[i]._id);
+		}
+	});
+
+	Goal.find({
+		_id: {
+			$in: goalsList
+		}
+	}, function(err, goals) {
 		if (err) {
 			res.send(err);
 			return;
@@ -301,7 +317,11 @@ api.dummyCompeleteGoal = function(req, res) {
 			});
 		}
 	});
-	Goal.find({}, function(err, goals) {
+	Goal.find({
+		_id: {
+			$in: goalsList
+		}
+	}, function(err, goals) {
 		if (err) {
 			res.send(err);
 			return;
