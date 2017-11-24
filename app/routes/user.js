@@ -283,7 +283,6 @@ api.dummyCompeleteGoal = function(req, res) {
 	User.find({
 		_id: req.body.userId
 	}).populate('goals').exec(function(err, users) {
-		console.log(users);
 		var goalCount = users.goals.length;
 		var goalResponse = users.goals;
 		var goalsList = [];
