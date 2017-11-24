@@ -281,12 +281,21 @@ api.completeGoal = function(req, res) {
 api.dummyCompleteGoal = function(req, res) {
 	User.findOne({
 		_id: req.body.userId
-	}).populate('goals').exec(function(err, users) {
-		var goalCount = users.goals.length;
-		var goalResponse = users.goals;
-		var goalsList = [];
-		for (var i = 0; i < goalCount; i++) {
-			goalsList.push(goalResponse[i]._id);
+	}).populate('goals').exec(function(err, user) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!user) {
+			res.send({
+				message: 'User not Found'
+			});
+		} else if (user) {
+			var goalCount = user.goals.length;
+			var goalResponse = user.goals;
+			var goalsList = [];
+			for (var i = 0; i < goalCount; i++) {
+				goalsList.push(goalResponse[i]._id);
+			}
 		}
 	});
 
