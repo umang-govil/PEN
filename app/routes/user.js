@@ -279,7 +279,6 @@ api.completeGoal = function(req, res) {
 };
 
 api.dummyCompeleteGoal = function(req, res) {
-
 	User.find({
 		_id: req.body.userId
 	}).populate('goals').exec(function(err, users) {
@@ -315,6 +314,7 @@ api.dummyCompeleteGoal = function(req, res) {
 					}
 				});
 			});
+
 		}
 	});
 	Goal.find({
@@ -330,7 +330,10 @@ api.dummyCompeleteGoal = function(req, res) {
 				message: 'Goals not found'
 			});
 		} else if (goals) {
-			res.send(goals);
+			res.json({
+				data: goals,
+				message: 'Goal Status Changed to Completed'
+			});
 		}
 	});
 };

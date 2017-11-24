@@ -115,22 +115,30 @@ api.dummyApproveTrainers = function(req, res) {
 					if (err) {
 						res.send(err);
 						return;
+					} else {
+						res.send({
+							message: 'Trainers Approved'
+						});
 					}
 				});
 			});
 		}
 	});
-	Trainer.find({}, function(err, trainers) {
-		if (err) {
-			res.send(err);
-			return;
-		} else if (!trainers) {
-			res.send({
-				message: 'Trainer not found'
-			});
-		} else if (trainers) {
-			res.send(trainers);
-		}
-	});
+	/*if (flag) {
+		Trainer.find({}, function(err, trainers) {
+			if (err) {
+				res.send(err);
+				return;
+			} else if (!trainers) {
+				res.send({
+					message: 'Trainer not found'
+				});
+			} else if (trainers) {
+				res.json({
+					data:trainers
+				});
+			}
+		});
+	}*/
 };
 module.exports = api;
