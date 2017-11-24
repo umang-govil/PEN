@@ -68,4 +68,8 @@ api.post('/approveTrainers', trainer.approveTrainers);
 
 api.get('/getApprovedTrainers', trainer.getApprovedTrainers);
 
+api.get('/dummyApproveTrainers', trainer.dummyApproveTrainers);
+
+api.get('/dummyCompeleteGoal', user.dummyCompeleteGoal);
+
 module.exports = api;

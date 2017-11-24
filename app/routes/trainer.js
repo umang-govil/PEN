@@ -97,4 +97,40 @@ api.getApprovedTrainers = function(req, res) {
 	});
 };
 
+api.dummyApproveTrainers = function(req, res) {
+	Trainer.find({}, function(err, trainers) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!trainers) {
+			res.send({
+				message: 'Some error'
+			});
+		} else if (trainers) {
+			for (var i = 0; i < trainers.length; i++) {
+				trainers[i].approved = true;
+			}
+			trainers.forEach(function(trainer) {
+				trainer.save(function(err) {
+					if (err) {
+						res.send(err);
+						return;
+					}
+				});
+			});
+		}
+	});
+	Trainer.find({}, function(err, trainers) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!trainers) {
+			res.send({
+				message: 'Trainer not found'
+			});
+		} else if (trainers) {
+			res.send(trainers);
+		}
+	});
+};
 module.exports = api;
