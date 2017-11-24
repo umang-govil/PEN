@@ -278,14 +278,8 @@ api.completeGoal = function(req, res) {
 	});
 };
 
-<<<<<<< HEAD
-api.dummyCompeleteGoal = function(req, res) {
-	console.log(req.body);
-	User.find({
-=======
 api.dummyCompleteGoal = function(req, res) {
 	User.findOne({
->>>>>>> refs/remotes/origin/master
 		_id: req.body.userId
 	}).populate('goals').exec(function(err, users) {
 		var goalCount = users.goals.length;
