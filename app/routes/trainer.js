@@ -36,16 +36,16 @@ api.getTrainers = function(req, res) {
 };
 
 api.approveTrainers = function(req, res) {
-	var trainers = req.body;
+	var response = req.body;
+	console.log(response);
 	var trainersList = [];
-	var trainerCount = trainers.length;
+	var trainerCount = response.length;
 
 	for (var i = 0; i < trainerCount; i++) {
-		if (trainers[i].approved) {
-			trainersList.push(trainers[i]._id);
+		if (response[i].approved) {
+			trainersList.push(response[i]._id);
 		}
 	}
-
 	Trainer.find({
 		_id: {
 			$in: trainersList
@@ -60,6 +60,12 @@ api.approveTrainers = function(req, res) {
 			});
 			return;
 		} else if (trainers) {
+<<<<<<< HEAD
+=======
+			for (var i = 0; i < trainers.length; i++) {
+				trainers[i].approved = true;
+			}
+>>>>>>> refs/remotes/origin/master
 			trainers.forEach(function(trainer) {
 				trainer.save(function(err) {
 					if (err) {
@@ -72,6 +78,24 @@ api.approveTrainers = function(req, res) {
 				success: true,
 				message: 'Trainer Approved'
 			});
+		}
+	});
+};
+
+api.getApprovedTrainers = function(req, res) {
+	Trainer.find({
+		approved: true
+	}, function(err, trainers) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!trainers) {
+			res.send({
+				message: 'Trainers not found'
+			});
+			return;
+		} else if (trainers) {
+			res.json(trainers);
 		}
 	});
 };

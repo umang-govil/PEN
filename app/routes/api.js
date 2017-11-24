@@ -66,4 +66,6 @@ api.post('/completeGoal', user.completeGoal);
 
 api.post('/approveTrainers', trainer.approveTrainers);
 
+api.get('/getApprovedTrainers', trainer.getApprovedTrainers);
+
 module.exports = api;
