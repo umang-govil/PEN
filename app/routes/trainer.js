@@ -79,4 +79,22 @@ api.approveTrainers = function(req, res) {
 	});
 };
 
+api.getApprovedTrainers = function(req, res) {
+	Trainer.find({
+		approved: true
+	}, function(err, trainers) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!trainers) {
+			res.send({
+				message: 'Trainers not found'
+			});
+			return;
+		} else if (trainers) {
+			res.json(trainers);
+		}
+	});
+};
+
 module.exports = api;
