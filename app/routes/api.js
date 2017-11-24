@@ -70,6 +70,6 @@ api.get('/getApprovedTrainers', trainer.getApprovedTrainers);
 
 api.get('/dummyApproveTrainers', trainer.dummyApproveTrainers);
 
-api.post('/dummyCompeleteGoal', user.dummyCompeleteGoal);
+api.post('/dummyCompleteGoal', user.dummyCompleteGoal);
 
 module.exports = api;
