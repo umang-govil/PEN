@@ -278,4 +278,61 @@ api.completeGoal = function(req, res) {
 	});
 };
 
+api.dummyCompeleteGoal = function(req, res) {
+
+	User.find({
+		_id: req.body.userId
+	}).populate('goals').exec(function(err, users) {
+		var goalCount = users.goals.length;
+		var goalResponse = users.goals;
+		var goalsList = [];
+		for (var i = 0; i < goalCount; i++) {
+			goalsList.push(goalResponse[i]._id);
+		}
+	});
+
+	Goal.find({
+		_id: {
+			$in: goalsList
+		}
+	}, function(err, goals) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!goals) {
+			res.send({
+				message: 'Goals not find'
+			});
+		} else if (goals) {
+			for (var i = 0; i < goals.length; i++) {
+				goals[i].goalStatus = true;
+			}
+			goals.forEach(function(goal) {
+				goal.save(function(err) {
+					if (err) {
+						res.send(err);
+						return;
+					}
+				});
+			});
+		}
+	});
+	Goal.find({
+		_id: {
+			$in: goalsList
+		}
+	}, function(err, goals) {
+		if (err) {
+			res.send(err);
+			return;
+		} else if (!goals) {
+			res.send({
+				message: 'Goals not found'
+			});
+		} else if (goals) {
+			res.send(goals);
+		}
+	});
+};
+
 module.exports = api;
